@@ -1,0 +1,48 @@
+{% extends "app/admin-main.html" %} {% load static %} {% block content %}
+<!-- <div class="row">
+  <div class="col-md-5">
+    <h5>CUSTOMERS:</h5>
+    <hr />
+    <div class="card card-body">
+      <table class="table table-sm">
+        <tr>
+          <th></th>
+          <th>Customer</th>
+          <th>Orders</th>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class=""></div>
+</div> -->
+
+{% include "app/dashboard-status.html" %}
+<div class="recent">
+  <table class="table orders">
+    <thead>
+      <tr>
+        <th scope="col" class="fs-5">Product</th>
+        <th scope="col" class="fs-5">Date Ordered</th>
+        <th scope="col" class="fs-5">Status</th>
+        <th scope="col" class="fs-5">Update</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in orders %}
+      <tr class="mb-5 mt-5">
+        <td class="order-data">{{i.product.title}}</td>
+        <td class="order-data">{{i.ordered_date}}</td>
+        <td class="order-data">{{i.status}}</td>
+        <td>
+          <button class="btn-warning update">
+            <a class="redirect" href="{% url 'update-product' i.id %}"
+              >Update</a
+            >
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

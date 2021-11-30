@@ -1,0 +1,209 @@
+.nav-item {
+  font-size: 20px;
+  margin-left: 10px;
+  color: white;
+}
+.navbar-brand {
+  font-size: 22px;
+}
+
+.navbar-collapse {
+  display: flex;
+  justify-content: space-between;
+}
+.status-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 70px;
+}
+.status {
+  width: 400px;
+  height: 190px;
+  background-color: aqua;
+  margin-right: 120px;
+  margin-bottom: 60px;
+}
+.totalorders {
+  background-color: #4cb4c7;
+}
+.delivered {
+  background-color: #7abecc;
+}
+.pending {
+  background-color: #7cd1c0;
+}
+.title {
+  text-align: center;
+  color: white;
+  margin-top: 8px;
+  font-size: 25px;
+}
+.content {
+  text-align: center;
+  color: white;
+  font-size: 40px;
+  margin-top: 30px;
+}
+.recent {
+  margin-top: 90px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.orders {
+  width: 55%;
+  background-color: white;
+}
+.header {
+  font-size: 20px;
+}
+.update {
+  border: none;
+  padding: 5px 8px;
+}
+.order-data {
+  font-size: 18px;
+}
+.btn-add {
+  width: 55%;
+  border: none;
+  padding: 5px 5px;
+  font-size: 18px;
+}
+.btn-update {
+  border: none;
+  padding: 5px;
+  font-size: 18px;
+  margin-top: 10px;
+}
+.input-form {
+  width: 45%;
+  margin: auto;
+  margin-top: 90px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+.form {
+  margin-top: 25px;
+  width: 80%;
+}
+.form-group {
+  margin-top: 10px;
+  font-size: 18px;
+}
+.btn {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+.form-control-file {
+  margin-left: 10px;
+}
+.redirect {
+  text-decoration: none;
+  color: black;
+}
+.update-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+  margin: auto;
+}
+.update-form-main {
+  width: 50%;
+}
+@media (max-width: 1549px) {
+  .orders {
+    width: 65%;
+  }
+  .btn-add {
+    width: 65%;
+  }
+}
+@media (max-width: 1350px) {
+  .orders {
+    width: 75%;
+  }
+  .btn-add {
+    width: 75%;
+  }
+  .input-form {
+    width: 55%;
+  }
+}
+@media (max-width: 1200px) {
+  .orders {
+    width: 85%;
+  }
+  .btn-add {
+    width: 85%;
+  }
+}
+@media (max-width: 1039px) {
+  .orders {
+    width: 95%;
+  }
+  .btn-add {
+    width: 95%;
+  }
+  .status {
+    margin-right: 40px;
+  }
+}
+
+@media (max-width: 992px) {
+  .navbar-collapse {
+    display: block;
+  }
+  .nav-item {
+    margin-left: 0px;
+  }
+  .input-form {
+    width: 65%;
+  }
+}
+@media (max-width: 900px) {
+  .input-form {
+    width: 95%;
+  }
+}
+@media (max-width: 700px) {
+  .status {
+    margin-right: 0px;
+  }
+  .orders {
+    width: 100%;
+  }
+  .btn-add {
+    width: 100%;
+  }
+  .order-data {
+    font-size: 17px;
+  }
+  .form {
+    width: 100%;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+}
+@media (max-width: 480px) {
+  .status {
+    width: 340px;
+    height: 180px;
+  }
+  .order-data {
+    font-size: 16px;
+  }
+  .input-form {
+    width: 100%;
+  }
+  .form-group {
+    font-size: 16px;
+  }
+}

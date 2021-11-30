@@ -1,0 +1,121 @@
+{% extends "app/admin-main.html" %} {% load static %} {% block content %}
+
+<div class="recent">
+  <button class="btn-danger btn-add" onclick="handleClick()">
+    Add New Product
+  </button>
+  <table class="table orders">
+    <thead>
+      <tr>
+        <th scope="col" class="fs-5">Product</th>
+        <th scope="col" class="fs-5">Selling Price</th>
+        <th scope="col" class="fs-5">Brand</th>
+        <th scope="col" class="fs-5">Category</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in products %}
+      <tr class="mb-5 mt-5">
+        <td class="order-data">{{i.title}}</td>
+        <td class="order-data">Rs {{i.selling_price}}</td>
+        <td class="order-data">{{i.brand}}</td>
+        <td class="order-data">{{i.category}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="input-form" id="input-form">
+  <form
+    class="form"
+    action="create-product"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="exampleInputEmail1">Title</label>
+      <input
+        name="title"
+        type="text"
+        class="form-control"
+        id="exampleInputEmail1"
+        aria-describedby="emailHelp"
+        placeholder="Enter Product Title"
+      />
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword1">Selling Price</label>
+      <input
+        type="text"
+        name="selling_price"
+        class="form-control"
+        id="exampleInputPassword1"
+        placeholder="Selling Price"
+      />
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword1">Discounted Price</label>
+      <input
+        type="text"
+        name="discounted_price"
+        class="form-control"
+        id="exampleInputPassword1"
+        placeholder="Discounted Price"
+      />
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword1">Brand</label>
+      <input
+        type="text"
+        name="brand"
+        class="form-control"
+        id="exampleInputPassword1"
+        placeholder="Enter Brand"
+      />
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword1">Description</label>
+      <textarea
+        name="description"
+        class="form-control"
+        id="exampleInputPassword1"
+        placeholder="Enter Description"
+      ></textarea>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword1">Cateogry</label>
+      <select
+        class="form-control"
+        name="category"
+        id="exampleFormControlSelect1"
+      >
+        <option>AG</option>
+        <option>EG</option>
+        <option>CG</option>
+        <option>M</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="exampleFormControlFile1">Choose Image </label>
+      <input
+        name="product_image"
+        type="file"
+        class="form-control-file"
+        id="exampleFormControlFile1"
+      />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+<script>
+  const handleClick = () => {
+    const ele = document.getElementById("input-form");
+    console.log(ele);
+    ele.scrollIntoView({
+      behavior: "smooth",
+    });
+  };
+</script>
+{% endblock %}

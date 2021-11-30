@@ -1,0 +1,32 @@
+{% extends "app/admin-main.html" %} {% load static %} {% block content %}
+
+<div class="update-form">
+  <form class="update-form-main" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="exampleFormControlSelect1">Product</label>
+      <select class="form-control" id="exampleFormControlSelect1">
+        <option>{{order.product.title}}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="exampleFormControlSelect1">Date Ordered</label>
+      <select class="form-control" id="exampleFormControlSelect1">
+        <option>{{order.ordered_date}}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="exampleFormControlSelect1">Status</label>
+      <select name="status" class="form-control" id="exampleFormControlSelect1">
+        <option>Accepted</option>
+        <option>Packed</option>
+        <option>Arriving</option>
+        <option>Delivered</option>
+        <option>Pending</option>
+        <option>Cancel</option>
+      </select>
+    </div>
+    <button class="btn-danger btn-update"><a>Update</a></button>
+  </form>
+</div>
+{%endblock %}
