@@ -2,10 +2,11 @@
 {% load static %}
 {% block title %}Login{% endblock title %}
 {% block main-content %}
+<div align="center"><a href="{% url 'admin-dashboard'%}"><button type="submit" class="btn btn-danger mt-4">Login As Seller</button></a></div>&nbsp;
 <div class="container">
  <div class="row my-3">
   <div class="col-sm-6 offset-sm-3">
-   <h3>Login</h3>
+   <h3>Login</h3>    
    <hr>
    <form action="" method="post" novalidate class="shadow p-5">
     {% csrf_token %}
@@ -29,4 +30,5 @@
   </div>
  </div>
 </div>
+
 {% endblock main-content %}
