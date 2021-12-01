@@ -11,6 +11,11 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponseRedirect
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
+import joblib
 
 class ProductView(View):
     def get(self,request):
@@ -119,6 +124,37 @@ class ReviewView(View):
             product_id = request.GET.get('prod_id')
             product = Product.objects.get(id=product_id)
             description = form.cleaned_data['description']
+            reviews = Reviews.objects.filter(product= product)
+            reviews_count = len(reviews)
+
+            data = pd.read_excel("review-details.xlsx")
+            T_data = data[['review_text', 'review_rating']]
+            df = T_data 
+            df1 = df.dropna()
+            df1.head()   
+            df1['Cleaned'] = df1['review_text'].apply(lambda x: " ".join(x.lower() for x in x.split()))
+            df1['Cleaned'] = df1['Cleaned'].str.replace('[^\w\s]','')
+
+            x = df1['Cleaned']       
+            y = df1['review_rating']
+            tfidf_vect_ngram = TfidfVectorizer(analyzer='word', token_pattern=r'\w{1,}', ngram_range=(1,2), max_features=10000)
+            tfidf_vect_ngram.fit(x)
+            
+            Model = joblib.load('F_model_retpred.sav')
+            new_review = description
+            #print(new_review)
+            padded = tfidf_vect_ngram.transform([new_review])
+            ALL = Model.predict(padded)
+            #print("Product Rating:",ALL)
+            #print(product.rating)
+            temp_rating = (product.rating*reviews_count)+ALL
+            temp_count = reviews_count+1
+            #print(temp_rating)
+            #print(temp_count)
+            
+            product.rating = temp_rating/temp_count
+            product.save()
+            #print(product.rating)
             reg = Reviews(user=user,description=description,product =product)
             reg.save()
             messages.success(request, 'Review Added Successfully')
