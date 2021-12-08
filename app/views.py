@@ -6,7 +6,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from numpy.core.fromnumeric import prod
 from .models import Customer, Product, Cart, OrderPlaced, Wishlist, Reviews
-from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomerReviewForm, OrderPlacedForm,ProductForm
+from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomerReviewForm, OrderPlacedForm,ProductForm, ImageSearchForm
 from django.contrib import messages
 from django.db.models import Q
 from django.http import JsonResponse
@@ -23,6 +23,8 @@ import csv
 from datetime import date
 from datetime import datetime,date
 from datetime import timedelta
+from base64 import b64encode
+
 warnings.filterwarnings('ignore')
 
 
@@ -116,6 +118,24 @@ def searchproduct(request):
         Q(description__icontains=query)
     )
     return render (request,'app/searchresults.html',{'search_query':query,'match_product':find_product})
+
+def searchproductimage(request):
+    if request.method == 'POST':
+        form = ImageSearchForm(request.POST, request.FILES)
+        if form.is_valid():
+            # prod_image = request.FILES['image']
+            # form = ImageSearchForm()
+            # data = prod_image.read()
+            # # Calling .decode() converts bytes object to str
+            # encoded = b64encode(data).decode()
+            # mime = 'image/jpeg;'
+            # context = {"image": "data:%sbase64,%s" % (mime, encoded)}
+            image = form.cleaned_data['image']
+            b64_img = b64encode(image.file.read())
+            return render(request, 'app/imagesearchresults.html', {'form':form, 'image':b64_img})
+    else:
+        form = ImageSearchForm()
+    return render (request,'app/imagesearchresults.html',{'form':form})
 
 @login_required
 def add_to_wishlist(request):
