@@ -1,0 +1,109 @@
+{% extends "app/admin-main.html" %} {% load static %}
+<!--  -->
+
+{% block content %}
+
+<div class="graph">
+  <h2 class="forecast-title">Forecasted Sales</h2>
+  <canvas id="myChart" width="400" height="100"></canvas>
+  <form class="sales-form" action="sales" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="graph-type">Select Graph Type</label>
+      <select class="form-control" name="graph" id="exampleFormControlSelect1">
+        <option>Bar</option>
+        <option>Line</option>
+        <option>Pie</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="graph-type">Select Duration (in days)</label>
+      <select
+        class="form-control"
+        name="duration"
+        id="exampleFormControlSelect1"
+      >
+        <option>10</option>
+        <option>20</option>
+        <option>30</option>
+        <option>40</option>
+        <option>50</option>
+        <option>50 +</option>
+      </select>
+    </div>
+    <button type="submit" class="btn-primary btn-change">Change Graph</button>
+  </form>
+</div>
+<script>
+  const transform = (data) => {
+    var newList = data.split("&#x27;");
+    var cleaned = [];
+    var ctr = 0;
+    for (var i = 0; i < newList.length; i++) {
+      if (newList[i][0] >= "0" && newList[i][0] <= "9") {
+        cleaned.push(newList[i]);
+      }
+    }
+
+    return cleaned;
+  };
+  const load = () => {
+    var ctx = document.getElementById("myChart").getContext("2d");
+    var labels = "{{dates}}";
+    var data = "{{sales}}";
+    var type = "{{graph}}";
+    var backgroundColor = [];
+    var borderColor = [];
+    for (var i = 0; i < data.length; i++) {
+      backgroundColor.push("rgba(54, 162, 235, 0.2)");
+      borderColor.push("rgba(54, 162, 235, 0.2)");
+    }
+    labels = transform(labels);
+
+    data = data.split(",");
+    var first = "",
+      len = data.length;
+    for (var i = 0; i < data[0].length; i++) {
+      if (data[0][i] >= "0" && data[0][i] <= "9") {
+        first += data[0][i];
+      }
+    }
+    data[0] = first;
+    first = "";
+    for (var i = 0; i < data[len - 1].length; i++) {
+      if (data[len - 1][i] >= "0" && data[len - 1][i] <= "9") {
+        first += data[len - 1][i];
+      }
+    }
+    data[len - 1] = first;
+    var ctx = document.getElementById("myChart").getContext("2d");
+    var myChart = new Chart(ctx, {
+      type: type,
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Predicted Sales",
+            data: data,
+            backgroundColor: backgroundColor,
+            borderColor: borderColor,
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true,
+              },
+            },
+          ],
+        },
+      },
+    });
+  };
+  window.onload = load();
+</script>
+{% endblock %}

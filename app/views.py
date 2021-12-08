@@ -1,8 +1,10 @@
+from time import time
 from django.contrib.auth import login
 from django.db.models.query import QuerySet
 from django.http.response import JsonResponse
 from django.shortcuts import redirect, render
 from django.views import View
+from numpy.core.fromnumeric import prod
 from .models import Customer, Product, Cart, OrderPlaced, Wishlist, Reviews
 from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomerReviewForm, OrderPlacedForm,ProductForm
 from django.contrib import messages
@@ -16,6 +18,52 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import joblib
+import warnings
+import csv
+from datetime import date
+from datetime import datetime,date
+from datetime import timedelta
+warnings.filterwarnings('ignore')
+
+
+def append_data(sales):
+    today = date.today()
+    lastrow = []
+    allRows = []
+    with open("test.csv","r") as csvfile:
+        csvreader = csv.reader(csvfile)
+        fields = next(csvreader)
+        for row in csvreader:
+            lastrow = row
+            allRows.append(row)
+    
+    if lastrow[1] == str(today):
+        newSales = int(allRows[-1][4]) + sales
+        allRows[-1][4]  = str(newSales)
+        with open("test.csv","a") as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerows(allRows)
+            csvfile.close()
+    else:
+        nextRow = []
+        nextRow.append(str(int(lastrow[0])+1))
+        nextRow.append(str(today))
+        nextRow.append(lastrow[2])
+        nextRow.append(lastrow[3])
+        nextRow.append(str(sales))
+        nextRow.append(str(today.year))
+        nextRow.append(str(today.month))
+        nextRow.append(str(today.day))
+        nextW = int(lastrow[-1])+1
+        if nextW > 7:
+            nextW = 1
+        nextRow.append(str(nextW))
+
+        with open("test.csv","a") as csvfile:
+            writerObj = csv.writer(csvfile)
+            writerObj.writerow(nextRow)
+            csvfile.close()
+
 
 class ProductView(View):
     def get(self,request):
@@ -134,7 +182,7 @@ class ReviewView(View):
             df1.head()   
             df1['Cleaned'] = df1['review_text'].apply(lambda x: " ".join(x.lower() for x in x.split()))
             df1['Cleaned'] = df1['Cleaned'].str.replace('[^\w\s]','')
-
+            
             x = df1['Cleaned']       
             y = df1['review_rating']
             tfidf_vect_ngram = TfidfVectorizer(analyzer='word', token_pattern=r'\w{1,}', ngram_range=(1,2), max_features=10000)
@@ -142,16 +190,21 @@ class ReviewView(View):
             
             Model = joblib.load('F_model_retpred.sav')
             new_review = description
-            #print(new_review)
+
             padded = tfidf_vect_ngram.transform([new_review])
             ALL = Model.predict(padded)
+            
             #print("Product Rating:",ALL)
             #print(product.rating)
-            temp_rating = (product.rating*reviews_count)+ALL
+            cur = 0
+            print(product.rating)
+            if product.rating != None:
+                cur = product.rating
+            temp_rating = (cur*reviews_count)+ALL
             temp_count = reviews_count+1
             #print(temp_rating)
-            #print(temp_count)
-            
+
+            print(temp_rating,temp_count,cur)
             product.rating = temp_rating/temp_count
             product.save()
             #print(product.rating)
@@ -355,15 +408,19 @@ def checkout(request):
     if request.user.is_authenticated:
             totalitem= len(Cart.objects.filter(user=request.user))
     cart_product = [p for p in Cart.objects.all() if p.user == request.user]
+    total_quantity = 0
     for p in cart_product:
         if p.quantity<1:
             p.delete()
-
+        else:
+            total_quantity += p.quantity
+    
     if cart_product:
         for p in cart_product:
             tempamount = (p.quantity * p.product.discounted_price)
             amount+=tempamount
         total_amount = amount+shipping_amount
+        append_data(total_quantity)
         return render(request, 'app/checkout.html',{'add':add, 'totalamount':total_amount, 'cart_items':cart_items,'totalitem':totalitem})
     
     else:
@@ -425,4 +482,45 @@ def updateProduct(request,pk):
         
     return render(request,"app/adminupdateProduct.html",{
         "order":order
+    })
+def salesForecasting(request):
+    lim = 1000
+    graphType = "bar"
+    if request.method == "POST":
+        if request.POST["duration"] != "50 +": 
+            lim = int(request.POST["duration"])
+        graphType = str(request.POST["graph"]).lower()
+    train_df = pd.read_csv("train.csv")
+    test_df = pd.read_csv("test.csv")
+    arima_test_df = test_df[['date','sales']].set_index('date')
+    arima_df = train_df[['date','sales']].set_index('date')
+    arima_test_df = arima_test_df['sales'].astype(int)
+    model = joblib.load("forecastingModel.sav");
+    predSales = model.predict(start=arima_test_df.index[0], end=arima_test_df.index[-1], dynamic= True)
+    sales = []
+    dates = []
+    current = str(date.today())
+    today = datetime.strptime(current,"%Y-%m-%d")
+    ctr = 0
+    for i in predSales:
+        if ctr >= lim:
+            break
+        else:
+            sales.append(int(i))
+            ctr = ctr+1
+    ctr = 0
+    for i in range(1,len(sales)+1):
+        if ctr >= lim:
+            break
+        else:
+            nextdate = today + timedelta(i)
+            inserteddate = str(nextdate).split(' ')[0]
+            # print(inserteddate)
+            dates.append(inserteddate)
+            ctr = ctr+1
+    # print(len(sales),len(dates))
+    return render(request,"app/SalesForecasting.html",{
+        "sales":sales,
+        "dates":dates,
+        "graph":graphType,
     })

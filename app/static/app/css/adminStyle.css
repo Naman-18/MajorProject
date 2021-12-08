@@ -118,6 +118,29 @@
 .update-form-main {
   width: 50%;
 }
+.graph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  /* height: 90vh; */
+  /* width: 80%; */
+}
+.forecast-title {
+  font-weight: 400;
+  margin-bottom: 40px;
+}
+.btn-change {
+  font-size: 16px;
+  width: 130px;
+  border: none;
+  padding: 5px 1px;
+  margin: auto;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+  border-radius: 5px;
+}
 @media (max-width: 1549px) {
   .orders {
     width: 65%;

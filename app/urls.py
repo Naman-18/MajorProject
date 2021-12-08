@@ -53,4 +53,5 @@ urlpatterns = [
     path('Admin/add-product',views.addProduct,name = "add-product"),
     path('Admin/create-product',views.createProduct,name = "create-product"),
     path("Admin/update-product/<str:pk>/",views.updateProduct,name="update-product"),
+    path("Admin/sales",views.salesForecasting,name="sales-forecasting"),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
