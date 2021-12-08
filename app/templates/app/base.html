@@ -44,9 +44,12 @@
              </ul>
            </li>
          </ul>
+         <form class="d-flex" action="/searchproductimage">
+          <button class="btn btn-warning" type="submit">Search With Image</button>
+        </form> &nbsp; &nbsp; &nbsp; &nbsp;
          <form class="d-flex" action="/searchproduct">
            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search_query" id="search_query">
-           <button class="btn btn-warning" type="submit">Search</button>
+           <button class="btn btn-warning" type="submit"> <img src = "{% static 'app/images/search_glass.jpg' %}" height="25px" width="25px" class="rounded-circle"></button>
          </form>
          <div>
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">

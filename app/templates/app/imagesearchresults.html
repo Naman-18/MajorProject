@@ -1,0 +1,26 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Search Results{% endblock title %}
+{% block main-content %}
+<div class="container my-5">
+  <div class="row">
+  <h1 class="text-center  mb-5">Search with Image </h1>
+  <div class="col-sm-9 offset-sm-1">
+ <div class = "text-center">
+    <form method="post" class="shadow p-5" enctype='multipart/form-data'>
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit" value="Submit" class="btn btn-danger mb-3">Submit </button>
+    </form>
+    
+    {% if image %}
+    <img src="{{image}}">
+    {% endif %}
+ <br>
+ <br>
+ </div>
+   </div>
+  </div>
+ </div>
+</div>
+{% endblock main-content %}
