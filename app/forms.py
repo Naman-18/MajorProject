@@ -60,3 +60,6 @@ class OrderPlacedForm(forms.ModelForm):
     class Meta:
         model = OrderPlaced
         fields = ['status']
+
+class ImageSearchForm(forms.Form):
+    image = forms.ImageField(help_text="", required=True)
