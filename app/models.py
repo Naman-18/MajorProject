@@ -96,6 +96,10 @@ STATUS_CHOICES = {
 
 }
 
+class TempImage(models.Model):
+    image = models.ImageField(upload_to='tempImage',null = True)
+    def __str__(self):
+        return str(self.id)
 class OrderPlaced(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer,on_delete=models.CASCADE)

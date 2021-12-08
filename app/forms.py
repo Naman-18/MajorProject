@@ -1,4 +1,5 @@
-from app.models import Customer, OrderPlaced, Product,Reviews
+from django.db.models import fields
+from app.models import Customer, OrderPlaced, Product,Reviews, TempImage
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField, PasswordChangeForm, PasswordResetForm, SetPasswordForm
@@ -63,3 +64,7 @@ class OrderPlacedForm(forms.ModelForm):
 
 class ImageSearchForm(forms.Form):
     image = forms.ImageField(help_text="", required=True)
+class TempForm(forms.ModelForm):
+    class Meta:
+        model = TempImage
+        fields = '__all__'

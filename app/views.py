@@ -5,8 +5,8 @@ from django.http.response import JsonResponse
 from django.shortcuts import redirect, render
 from django.views import View
 from numpy.core.fromnumeric import prod
-from .models import Customer, Product, Cart, OrderPlaced, Wishlist, Reviews
-from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomerReviewForm, OrderPlacedForm,ProductForm, ImageSearchForm
+from .models import TempImage,Customer, Product, Cart, OrderPlaced, Wishlist, Reviews
+from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomerReviewForm, OrderPlacedForm,ProductForm, ImageSearchForm, TempForm
 from django.contrib import messages
 from django.db.models import Q
 from django.http import JsonResponse
@@ -130,9 +130,19 @@ def searchproductimage(request):
             # encoded = b64encode(data).decode()
             # mime = 'image/jpeg;'
             # context = {"image": "data:%sbase64,%s" % (mime, encoded)}
-            image = form.cleaned_data['image']
-            b64_img = b64encode(image.file.read())
-            return render(request, 'app/imagesearchresults.html', {'form':form, 'image':b64_img})
+            records = TempImage.objects.all()
+            records.delete()
+            imgForm = TempForm(request.POST,request.FILES)
+            if imgForm.is_valid():
+                imgForm.save()
+                records = TempImage.objects.get()
+                image = records.image
+                # print(image.url)
+                # print(records.image)
+            # image = form.cleaned_data['image']
+            # b64_img = b64encode(image.file.read())
+            # print(records)
+            return render(request, 'app/imagesearchresults.html', {'form':form, 'image':image})
     else:
         form = ImageSearchForm()
     return render (request,'app/imagesearchresults.html',{'form':form})
