@@ -13,9 +13,51 @@
         <button type="submit" value="Submit" class="btn btn-danger mb-3">Submit </button>
     </form>
     
+    <h1 class="text-center  mb-5 mt-5">Showing Matching Results</h1>
     {% if image %}
-    <img src="{{image.url}}">
+    <img src = "{{image}}" width="150" height="150"/>
     {% endif %}
+    <div class="container my-5">
+      
+      <div class="row">
+      
+      
+       <div class="col-sm-9 offset-sm-1">
+       {% if match_product%}
+       {% for products in match_product%}
+        <div class="row bg-light shadow-sm mb-3">
+        <div class = "col-sm-2">
+        <a href="{% url 'product-detail' products.id %}" class="btn">
+        <img src = "{{products.product_image.url}}" alt="" srcset="" class="img-fluid" height="150" width="150"> </a>
+        </div>
+         <div class="col-sm-7">
+         <p><strong> {{products.title}} </strong> </p>
+         <p><strong> Brand:</strong> {{products.brand}} </p>
+         <p> <strong> Category: </strong> {{products.category}} </p>
+         <p> <strong> Price: </strong> {{products.discounted_price}} </p>
+         </div>
+         <div class="col-sm-2">
+         <br>
+         <form action="/add-to-cart" class="d-inline">
+        <input type = "hidden" name="prod_id" value={{products.id}} id="prod_id">
+          
+      </form>
+         </div>
+         </div>
+        
+      {%endfor%}
+      {% else %}
+      <div class = "text-center">
+      <img src = "{% static 'app/images/noimagefound.png' %}" alt="" class ="img-fluid img-thumbnail w-25 center">
+      <br>
+      <br>
+      <h3 > Sorry, No Results Found </h3>
+      </div>
+      {%endif%}
+        </div>
+       </div>
+      </div>
+     </div>
  <br>
  <br>
  </div>
