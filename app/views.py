@@ -12,10 +12,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.http import HttpResponseRedirect
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import joblib
 import warnings
@@ -23,11 +20,7 @@ import csv
 from datetime import date
 from datetime import datetime,date
 from datetime import timedelta
-from base64 import b64encode
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
-from imageSimilarity import imageSimilarity
-import pickle
+from imageSimilarity import TestImages
 import numpy as np
 warnings.filterwarnings('ignore')
 
@@ -142,7 +135,7 @@ def searchproductimage(request):
                     img = i.product_image.url[1:]
                     productDict[img] = i
                     files.append(i.product_image.url[1:])
-                result = imageSimilarity(files,productDict)
+                result = TestImages(files,productDict)
             return render(request, 'app/imagesearchresults.html', {'form':form, 'match_product':result,'image' : image.url})
     else:
         form = ImageSearchForm()
@@ -205,51 +198,51 @@ class ReviewView(View):
             description = form.cleaned_data['description']
             reviews = Reviews.objects.filter(product= product)
             reviews_count = len(reviews)
-            all_reviews = []
-            all_reviews.append(description)
-            with open('tokenizer_.pickle', 'rb') as handle:
-                 tokenizer = pickle.load(handle)
-            for i in reviews:
-                all_reviews.append(i.description)
-            # print(all_reviews)
-            temp = pad_sequences(tokenizer.texts_to_sequences(all_reviews), maxlen=200)
-            Model = joblib.load('reviewToRating.sav')
-            result = Model.predict(temp)
-            rating = 0.0
-            for p in result:
-                rating += np.argmax(p)+1
-            rating = rating // (reviews_count+1)
-            # data = pd.read_excel("review-details.xlsx")
-            # T_data = data[['review_text', 'review_rating']]
-            # df = T_data 
-            # df1 = df.dropna()
-            # df1.head()   
-            # df1['Cleaned'] = df1['review_text'].apply(lambda x: " ".join(x.lower() for x in x.split()))
-            # df1['Cleaned'] = df1['Cleaned'].str.replace('[^\w\s]','')
+            # all_reviews = []
+            # all_reviews.append(description)
+            # with open('tokenizer_.pickle', 'rb') as handle:
+            #      tokenizer = pickle.load(handle)
+            # for i in reviews:
+            #     all_reviews.append(i.description)
+            # # print(all_reviews)
+            # temp = pad_sequences(tokenizer.texts_to_sequences(all_reviews), maxlen=200)
+            # Model = joblib.load('reviewToRating.sav')
+            # result = Model.predict(temp)
+            # rating = 0.0
+            # for p in result:
+            #     rating += np.argmax(p)+1
+            # rating = rating // (reviews_count+1)
+            data = pd.read_excel("review-details.xlsx")
+            T_data = data[['review_text', 'review_rating']]
+            df = T_data 
+            df1 = df.dropna()
+            df1.head()   
+            df1['Cleaned'] = df1['review_text'].apply(lambda x: " ".join(x.lower() for x in x.split()))
+            df1['Cleaned'] = df1['Cleaned'].str.replace('[^\w\s]','')
             
-            # x = df1['Cleaned']       
-            # y = df1['review_rating']
-            # tfidf_vect_ngram = TfidfVectorizer(analyzer='word', token_pattern=r'\w{1,}', ngram_range=(1,2), max_features=10000)
-            # tfidf_vect_ngram.fit(x)
+            x = df1['Cleaned']       
+            y = df1['review_rating']
+            tfidf_vect_ngram = TfidfVectorizer(analyzer='word', token_pattern=r'\w{1,}', ngram_range=(1,2), max_features=10000)
+            tfidf_vect_ngram.fit(x)
             
-            # Model = joblib.load('F_model_retpred.sav')
-            # new_review = description
+            Model = joblib.load('F_model_retpred.sav')
+            new_review = description
 
-            # padded = tfidf_vect_ngram.transform([new_review])
-            # ALL = Model.predict(padded)
+            padded = tfidf_vect_ngram.transform([new_review])
+            ALL = Model.predict(padded)
             
-            # #print("Product Rating:",ALL)
-            # #print(product.rating)
-            # cur = 0
-            # print(product.rating)
-            # if product.rating != None:
-            #     cur = product.rating
-            # temp_rating = (cur*reviews_count)+ALL
-            # temp_count = reviews_count+1
-            # #print(temp_rating)
+            #print("Product Rating:",ALL)
+            #print(product.rating)
+            cur = 0
+            print(product.rating)
+            if product.rating != None:
+                cur = product.rating
+            temp_rating = (cur*reviews_count)+ALL
+            temp_count = reviews_count+1
+            #print(temp_rating)
 
-            # print(temp_rating,temp_count,cur)
-            product.rating = rating
+            print(temp_rating,temp_count,cur)
+            product.rating = temp_rating // temp_count
             product.save()
             #print(product.rating)
             reg = Reviews(user=user,description=description,product =product)
@@ -528,7 +521,7 @@ def updateProduct(request,pk):
         "order":order
     })
 def salesForecasting(request):
-    lim = 1000
+    lim = 20
     graphType = "bar"
     if request.method == "POST":
         if request.POST["duration"] != "50 +": 
