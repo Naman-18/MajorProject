@@ -5,6 +5,8 @@ from django.http.response import JsonResponse
 from django.shortcuts import redirect, render
 from django.views import View
 from numpy.core.fromnumeric import prod
+
+from deltaRating import extractInfo
 from .models import TempImage,Customer, Product, Cart, OrderPlaced, Wishlist, Reviews
 from .forms import CustomerRegistrationForm, CustomerProfileForm, CustomerReviewForm, OrderPlacedForm,ProductForm, ImageSearchForm, TempForm
 from django.contrib import messages
@@ -169,7 +171,14 @@ def deletereview(request):
     viewid = request.GET.get('reviewid')
     c =Reviews.objects.get(Q(id=viewid) & Q(user=request.user))
     c.delete()
-    return  redirect('/orders')
+    totalitem=0
+    acoustic = Product.objects.filter(category = 'AG')
+    electric = Product.objects.filter(category = 'EG')
+    classical = Product.objects.filter(category = 'CG')
+    if request.user.is_authenticated:
+        totalitem= len(Cart.objects.filter(user=request.user))
+    return redirect('/',
+    {'acoustic':acoustic, 'electric' : electric, 'classical': classical,'totalitem':totalitem})
 
 
 @login_required
@@ -230,21 +239,18 @@ class ReviewView(View):
 
             padded = tfidf_vect_ngram.transform([new_review])
             ALL = Model.predict(padded)
-            
-            #print("Product Rating:",ALL)
-            #print(product.rating)
             cur = 0
             print(product.rating)
             if product.rating != None:
                 cur = product.rating
             temp_rating = (cur*reviews_count)+ALL
             temp_count = reviews_count+1
-            #print(temp_rating)
-
-            print(temp_rating,temp_count,cur)
             product.rating = temp_rating // temp_count
+            delta = extractInfo(description)
+            maxx = max(5,product.rating + delta[0])
+            minn = min(1,product.rating - delta[1])
+            product.rating = (maxx + minn) / 2
             product.save()
-            #print(product.rating)
             reg = Reviews(user=user,description=description,product =product)
             reg.save()
             messages.success(request, 'Review Added Successfully')
@@ -254,7 +260,7 @@ class ReviewView(View):
             classical = Product.objects.filter(category = 'CG')
             if request.user.is_authenticated:
                 totalitem= len(Cart.objects.filter(user=request.user))
-            return render(request, 'app/home.html',
+            return redirect( '',
             {'acoustic':acoustic, 'electric' : electric, 'classical': classical,'totalitem':totalitem})
             
 

@@ -1,44 +1,7 @@
-import matplotlib.pyplot as plt
-# from typing_extensions import final
-# from keras.applications import vgg16
-# from keras.preprocessing.image import load_img,img_to_array
-# from keras.models import Model
-# from keras.applications.imagenet_utils import preprocess_input
-# import numpy as np
-# from sklearn.metrics.pairwise import cosine_similarity
-# import pandas as pd
-
-# def imageSimilarity(files,prodDict):
-#     importedImages = []
-#     imgs_model_width, imgs_model_height = 224, 224
-#     vgg_model = vgg16.VGG16(weights='imagenet')
-#     feat_extractor = Model(inputs=vgg_model.input,outputs=vgg_model.get_layer("fc2").output)
-#     for i in files:
-#         t1 = load_img(i, target_size=(imgs_model_width, imgs_model_height))
-#         numpy_image = img_to_array(t1)
-#         image_batch = np.expand_dims(numpy_image, axis=0)
-#         importedImages.append(image_batch)
-#     images = np.vstack(importedImages)
-#     processed_imgs = preprocess_input(images.copy())
-#     imgs_features = feat_extractor.predict(processed_imgs)
-#     cosSimilarities = cosine_similarity(imgs_features)
-#     cos_similarities_df = pd.DataFrame(cosSimilarities, columns=files, index=files)
-#     cos_similarities_df.head()
-#     sortedRes = []
-#     finalRes  = []
-#     for i in range(1,len(files)):
-#         sortedRes.append([cos_similarities_df[files[0]][files[i]],prodDict[files[i]]])
-#     sortedRes.sort(reverse=True)
-    
-#     for i in range(0,8):
-#         # print(sortedRes[i][0])
-#         finalRes.append(sortedRes[i][1])
-#     return finalRes
 import torch
 import cv2
 import numpy as np
-import os
-from torch import optim, nn
+from torch import  nn
 from torchvision import models, transforms
 def cosine_similarity(list_1, list_2):
   return np.dot(list_1, list_2)/(np.linalg.norm(list_1)*np.linalg.norm(list_2))
@@ -87,7 +50,8 @@ def TestImages(files,prodDict):
         sortedRes.append([cosine_similarity(features[0],features[i]),files[i]])
     sortedRes.sort(reverse=True)
     for i in range(0,8):
-        print(sortedRes[i][0])
+      print(sortedRes[i][0])
+      if sortedRes[i][0] > 0.6:
         finalRes.append(prodDict[sortedRes[i][1]])
-    # plt.imshow(files[0])
+    
     return finalRes
